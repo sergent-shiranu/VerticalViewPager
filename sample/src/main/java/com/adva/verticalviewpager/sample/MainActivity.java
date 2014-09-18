@@ -1,5 +1,6 @@
 package com.adva.verticalviewpager.sample;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -7,48 +8,95 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
+import com.adva.verticalviewpager.VerticalAccordionTransformer;
+import com.adva.verticalviewpager.VerticalBackgroundToForegroundTransformer;
 import com.adva.verticalviewpager.VerticalCubeInTransformer;
+import com.adva.verticalviewpager.VerticalCubeOutTransformer;
+import com.adva.verticalviewpager.VerticalDefaultTransformer;
+import com.adva.verticalviewpager.VerticalDepthPageTransformer;
+import com.adva.verticalviewpager.VerticalFlipHorizontalTransformer;
+import com.adva.verticalviewpager.VerticalFlipVerticalTransformer;
+import com.adva.verticalviewpager.VerticalForegroundToBackgroundTransformer;
+import com.adva.verticalviewpager.VerticalRotateDownTransformer;
+import com.adva.verticalviewpager.VerticalRotateUpTransformer;
+import com.adva.verticalviewpager.VerticalStackTransformer;
+import com.adva.verticalviewpager.VerticalTabletTransformer;
 import com.adva.verticalviewpager.VerticalViewPager;
+import com.adva.verticalviewpager.VerticalZoomInTransformer;
+import com.adva.verticalviewpager.VerticalZoomOutSlideTransformer;
+import com.adva.verticalviewpager.VerticalZoomOutTranformer;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ActionBar.OnNavigationListener {
 
     private VerticalViewPager verticalViewPager;
+
+    private static final ArrayList<TransformerItem> TRANSFORM_CLASSES;
+
+    private int mSelectedItem;
+
+    static {
+        TRANSFORM_CLASSES = new ArrayList<TransformerItem>();
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalDefaultTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalAccordionTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalBackgroundToForegroundTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalCubeInTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalCubeOutTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalDepthPageTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalFlipHorizontalTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalFlipVerticalTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalForegroundToBackgroundTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalRotateDownTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalRotateUpTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalStackTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalTabletTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalZoomInTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalZoomOutSlideTransformer.class));
+        TRANSFORM_CLASSES.add(new TransformerItem(VerticalZoomOutTranformer.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final ArrayAdapter<TransformerItem> actionBarAdapter = new ArrayAdapter<TransformerItem>(
+                getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, TRANSFORM_CLASSES);
+
+        final ActionBar actionBar = getActionBar();
+        actionBar.setListNavigationCallbacks(actionBarAdapter, this);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
+
+
         setContentView(R.layout.activity_main);
         verticalViewPager = (VerticalViewPager) findViewById(R.id.verticalviewpager);
 
         verticalViewPager.setAdapter(new DummyAdapter(getFragmentManager()));
-        verticalViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pagemargin));
-        verticalViewPager.setPageMarginDrawable(new ColorDrawable(getResources().getColor(android.R.color.holo_green_dark)));
+        mSelectedItem = 0;
+        actionBar.setSelectedNavigationItem(mSelectedItem);
+    }
 
-        //verticalViewPager.setPageTransformer(true, new VerticalDefaultTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalAccordionTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalBackgroundToForegroundTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalForegroundToBackgroundTransformer());
-        verticalViewPager.setPageTransformer(true, new VerticalCubeInTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalCubeOutTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalDepthPageTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalFlipHorizontalTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalFlipVerticalTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalRotateDownTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalRotateUpTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalStackTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalZoomOutTranformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalZoomInTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalZoomOutSlideTransformer());
-        //verticalViewPager.setPageTransformer(true, new VerticalTabletTransformer());
+    @Override
+    public boolean onNavigationItemSelected(int position, long itemId) {
+        mSelectedItem = position;
+        try {
+            verticalViewPager.setPageTransformer(true, TRANSFORM_CLASSES.get(position).clazz.newInstance());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+        return true;
     }
 
     @Override
@@ -61,6 +109,15 @@ public class MainActivity extends Activity {
             // Otherwise, select the previous step.
             verticalViewPager.setCurrentItem(verticalViewPager.getCurrentItem() - 1);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Toggle Fade");
+        String[] effects = this.getResources().getStringArray(R.array.jazzy_effects);
+        for (String effect : effects)
+            menu.add(effect);
+        return true;
     }
 
     public class DummyAdapter extends FragmentPagerAdapter {
@@ -157,6 +214,23 @@ public class MainActivity extends Activity {
             return rootView;
         }
 
+
+    }
+
+    private static final class TransformerItem {
+
+        final String title;
+        final Class<? extends ViewPager.PageTransformer> clazz;
+
+        public TransformerItem(Class<? extends ViewPager.PageTransformer> clazz) {
+            this.clazz = clazz;
+            title = clazz.getSimpleName();
+        }
+
+        @Override
+        public String toString() {
+            return title;
+        }
 
     }
 
